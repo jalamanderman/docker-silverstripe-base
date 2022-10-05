@@ -107,9 +107,6 @@ RUN curl --silent --show-error https://getcomposer.org/installer | php -- --inst
 #Make sure compose downloads via https (speed increase)
 RUN composer config --global repo.packagist composer https://packagist.org
 
-# Install Deployer
-RUN curl -L https://deployer.org/deployer.phar > /usr/local/bin/dep \
-    && chmod +x /usr/local/bin/dep
 
 RUN curl --location --output /usr/local/bin/mhsendmail --silent https://github.com/mailhog/mhsendmail/releases/download/v0.2.0/mhsendmail_linux_amd64 && \
     chmod +x /usr/local/bin/mhsendmail
