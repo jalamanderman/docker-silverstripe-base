@@ -22,5 +22,14 @@ then
     chown -R docker-dev:docker-dev /home/docker-dev/.ssh
 fi
 
+if [ $NODE_VERSION ]; then
+    current_node_version=$(node -v | tr -d "v")
+    if [ "$NODE_VERSION" != "$current_node_version" ]; then
+        echo "Node versions don't match, installing desired Node version based on environment variable: $NODE_VERSION"
+        . "$NVM_DIR/nvm.sh" && nvm install $NODE_VERSION && nvm alias default $NODE_VERSION
+        NODE_PATH="$NVM_DIR/v$NODE_VERSION/lib/node_modules"
+        PATH="$NVM_DIR/versions/node/v$NODE_VERSION/bin:$PATH"
+    fi
+fi
 
 exec apache2-foreground

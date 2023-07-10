@@ -95,6 +95,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     software-properties-common \
     default-jre \
     openssh-client \
+    gnupg2 \
     ; apt-get purge -y --auto-remove \
     ; rm -rf /var/lib/apt/lists/*
 
@@ -156,10 +157,20 @@ RUN mkdir -p /home/docker-dev/.composer && \
     chown -R docker-dev:docker-dev /home/docker-dev
 
 # Install Node
-RUN curl -sL https://deb.nodesource.com/setup_16.x | bash - \
-  && apt install -y --no-install-recommends nodejs \
-  && apt clean \
-  && rm -rf /var/lib/apt/lists/*
+USER docker-dev
+ENV NVM_DIR /home/docker-dev/.nvm
+RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh | bash
+
+RUN . "$NVM_DIR/nvm.sh" && nvm install 16 && nvm alias default 16
+ENV NODE_PATH $NVM_DIR/v16.14.2/lib/node_modules
+ENV PATH $NVM_DIR/versions/node/v16.14.2/bin:$PATH
+
+USER root
+RUN echo 'export NVM_DIR="/home/docker-dev/.nvm"' >> /etc/bash.bashrc
+RUN echo '[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"' >> /etc/bash.bashrc
+RUN echo '[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"' >> /etc/bash.bashrc
+RUN echo 'if [ -n "$NODE_VERSION" ]; then . "$NVM_DIR/nvm.sh" && nvm install $NODE_VERSION && nvm alias default $NODE_VERSION; fi' > /etc/profile.d/nvm_setup.sh
+RUN chmod +x /etc/profile.d/nvm_setup.sh
 
 # Install Yarn
 RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - && \
