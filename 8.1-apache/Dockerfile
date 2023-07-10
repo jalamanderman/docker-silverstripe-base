@@ -72,20 +72,6 @@ SHELL [ "/bin/bash", "-l", "-c" ]
 
 ENV BASH_ENV "~/.bashrc"
 
-# Install NVM, Node.js and Yarn
-ENV NVM_DIR /root/.nvm
-RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh | bash \
-    && . $NVM_DIR/nvm.sh \
-    && nvm install 16 \
-    && nvm use 16 \
-    && nvm alias default 16 \
-    && curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - \
-    && echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list \
-    && apt update && apt install -y --no-install-recommends yarn \
-    && apt clean \
-    && rm -rf /var/lib/apt/lists/*
-
-
 # Make folder for jre install
 RUN mkdir -p /usr/share/man/man1
 
@@ -168,6 +154,20 @@ RUN chmod 755 /entrypoint.sh;
 RUN useradd -G www-data,root -u 1000 -d /home/docker-dev docker-dev
 RUN mkdir -p /home/docker-dev/.composer && \
     chown -R docker-dev:docker-dev /home/docker-dev
+
+# Install Node
+RUN curl -sL https://deb.nodesource.com/setup_16.x | bash - \
+  && apt install -y --no-install-recommends nodejs \
+  && apt clean \
+  && rm -rf /var/lib/apt/lists/*
+
+# Install Yarn
+RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - && \
+    echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list && \
+    apt update && \
+    apt install -y --no-install-recommends yarn && \
+    apt clean && \
+    rm -rf /var/lib/apt/lists/*
 
 # Copy current directory (website) directly to /var/www/html
 #     This can sometimes provide a performance improvement over mounting with volumes.
