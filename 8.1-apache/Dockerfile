@@ -161,6 +161,14 @@ RUN curl -sL https://deb.nodesource.com/setup_16.x | bash - \
   && apt clean \
   && rm -rf /var/lib/apt/lists/*
 
+# Install Yarn
+RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - && \
+    echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list && \
+    apt update && \
+    apt install -y --no-install-recommends yarn && \
+    apt clean && \
+    rm -rf /var/lib/apt/lists/*
+
 # Copy current directory (website) directly to /var/www/html
 #     This can sometimes provide a performance improvement over mounting with volumes.
 # COPY . /var/www/html/
