@@ -165,6 +165,9 @@ RUN . "$NVM_DIR/nvm.sh" && nvm install 16 && nvm alias default 16
 ENV NODE_PATH $NVM_DIR/v16.14.2/lib/node_modules
 ENV PATH $NVM_DIR/versions/node/v16.14.2/bin:$PATH
 
+# Globally install gulp
+RUN . "$NVM_DIR/nvm.sh" && npm install --global gulp-cli
+
 USER root
 RUN echo 'export NVM_DIR="/home/docker-dev/.nvm"' >> /etc/bash.bashrc
 RUN echo '[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"' >> /etc/bash.bashrc
